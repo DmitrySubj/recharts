@@ -1,10 +1,11 @@
 import "./styles.css";
 import React, {useMemo} from "react";
-import {CartesianGrid, Dot, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis,} from "recharts";
+import {CartesianGrid, Dot, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis} from "recharts";
 import {data} from "./data";
 import {useZScore} from "./hooks/useZScore";
 import {useZColor} from "./hooks/useZColor";
 import {LinearGradient} from "./components/LinearGradient";
+import {CustomizedDot } from "./components/CustomizedDot";
 
 export default function App() {
     const xPvValues =  useMemo(() => data.map(el => el.pv), [data]);
@@ -33,13 +34,15 @@ export default function App() {
                     type="monotone"
                     dataKey="pv"
                     stroke="url(#colorPv)"
-                    dot={(props) => <Dot {...props} stroke={zScorePv[props.index] > 1 ? 'green' : 'red'} />}
+                    dot={(props) => <Dot {...props} stroke={zScorePv[props.index] > 1 ? 'red' : 'green'} />}
+                    activeDot={(props) => <CustomizedDot {...props} stroke={zScorePv[props.index] > 1 ? 'red' : 'green'} />}
                 />
                 <Line
                     type="monotone"
                     dataKey="uv"
                     stroke="url(#colorUv)"
-                    dot={(props) => <Dot {...props} stroke={zScoreUv[props.index] > 1 ? 'green' : 'red'} />}
+                    dot={(props) => <Dot {...props} stroke={zScoreUv[props.index] > 1 ? 'red' : 'green'} />}
+                    activeDot={(props) => <CustomizedDot {...props} stroke={zScoreUv[props.index] > 1 ? 'red' : 'green'} />}
                 />
 
             </LineChart>
