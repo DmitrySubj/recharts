@@ -1,22 +1,16 @@
 import "./styles.css";
-import React from "react";
+import React, {useMemo} from "react";
 import {CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis,} from "recharts";
 import {data} from "./data";
 import {CustomizedDot} from "./components/CustomizedDot";
+import {useZScore} from "./hooks/useZScore";
 
 export default function App() {
-    const xPvValues =  data.map(el => el.pv);
-    const getXPvDeviation = (el: number) => Math.pow(el - xPvAverage,  2);
-    const sum = (a: number, b: number) => a + b
+    const xPvValues =  useMemo(() => data.map(el => el.pv), [data]);
+    const xUvValues =  useMemo(() => data.map(el => el.uv), [data]);
 
-    const xPvAverage =  xPvValues.reduce(sum, 0)/xPvValues.length;
-    const xPvDispersionSum = xPvValues.map(getXPvDeviation).reduce(sum, 0)/xPvValues.length;
-
-    const xPvDispersion = Math.sqrt(xPvDispersionSum);
-    const getZScore = (x: number) => (x - xPvAverage) / xPvDispersion;
-    const zScorePv = xPvValues.map(getZScore);
-
-    console.log(zScorePv);
+    const zScorePv = useZScore(xPvValues);
+    const zScoreUv = useZScore(xUvValues);
 
 
     // internet solution
