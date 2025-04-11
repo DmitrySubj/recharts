@@ -1,21 +1,39 @@
 import "./styles.css";
-import React, {useMemo} from "react";
-import {CartesianGrid, Dot, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis} from "recharts";
+import React, {useMemo, memo} from "react";
+import {
+    CartesianGrid,
+    Dot,
+    Legend,
+    Line,
+    LineChart,
+    ResponsiveContainer,
+    Tooltip,
+    XAxis,
+    YAxis,
+} from "recharts";
 import {data} from "./data";
 import {useZScore} from "./hooks/useZScore";
 import {useZColor} from "./hooks/useZColor";
 import {LinearGradient} from "./components/LinearGradient";
 import {CustomizedDot } from "./components/CustomizedDot";
+import {ZColors, EZScoresKeys} from "./types";
+
 
 export default function App() {
     const xPvValues =  useMemo(() => data.map(el => el.pv), [data]);
     const xUvValues =  useMemo(() => data.map(el => el.uv), [data]);
 
-    const zScorePv = useZScore(xPvValues);
-    const zScorePvColorPercent = useZColor(zScorePv, 1);
-    const zScoreUv = useZScore(xUvValues);
-    const zScoreUvColorPercent = useZColor(zScoreUv, 1);
+    const zScores = {
+        [EZScoresKeys.PV]: useZScore(xPvValues),
+        [EZScoresKeys.UV]: useZScore(xUvValues),
+    };
 
+    const zScorePvColorPercent = useZColor(zScores.pv, 1);
+    const zScoreUvColorPercent = useZColor(zScores.uv, 1);
+
+    const extractStrokeColor = (zKey: EZScoresKeys, index: number) => zScores[zKey][index] > 1 ? ZColors.RED : ZColors.GREEN
+
+    const MemoCustomizedDot = memo(CustomizedDot);
 
     return (
         <ResponsiveContainer width={"100%"} height={300}>
@@ -34,15 +52,15 @@ export default function App() {
                     type="monotone"
                     dataKey="pv"
                     stroke="url(#colorPv)"
-                    dot={(props) => <Dot {...props} stroke={zScorePv[props.index] > 1 ? 'red' : 'green'} />}
-                    activeDot={(props) => <CustomizedDot {...props} stroke={zScorePv[props.index] > 1 ? 'red' : 'green'} />}
+                    dot={(props) => <Dot {...props} stroke={extractStrokeColor(EZScoresKeys.PV, props.index)} />}
+                    activeDot={(props) => <MemoCustomizedDot key={props.v} {...props} stroke={extractStrokeColor(EZScoresKeys.PV, props.index)} />}
                 />
                 <Line
                     type="monotone"
                     dataKey="uv"
                     stroke="url(#colorUv)"
-                    dot={(props) => <Dot {...props} stroke={zScoreUv[props.index] > 1 ? 'red' : 'green'} />}
-                    activeDot={(props) => <CustomizedDot {...props} stroke={zScoreUv[props.index] > 1 ? 'red' : 'green'} />}
+                    dot={(props) => <Dot {...props} stroke={extractStrokeColor(EZScoresKeys.UV, props.index)} />}
+                    activeDot={(props) => <MemoCustomizedDot key={props.v} {...props} stroke={extractStrokeColor(EZScoresKeys.UV, props.index)} />}
                 />
 
             </LineChart>
