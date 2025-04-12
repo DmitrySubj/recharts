@@ -1,9 +1,9 @@
 import React from 'react';
 import {DotProps} from "recharts";
 
-export type TProps = DotProps & React.SVGProps<SVGCircleElement>;
+export type TCustomizedDot = DotProps & React.SVGProps<SVGCircleElement>;
 
-export const CustomizedDot: React.FC<TProps> = (props) => {
+export const CustomizedDot: React.FC<TCustomizedDot> = (props) => {
     return (
         <circle
             {...props}
